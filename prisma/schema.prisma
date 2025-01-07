@@ -1,0 +1,147 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Landing {
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  page      String @unique
+  section   String
+  thumbnail Json
+  // headtext  String
+}
+
+model About {
+  id            String  @id @default(auto()) @map("_id") @db.ObjectId
+  page          String  @unique
+  section       String
+  about_details String?
+  title         String?
+  image         String?
+}
+
+model Promo {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  page        String @unique
+  section     String @unique
+  first_card  String
+  second_card String
+  third_card  String
+  fourth_card String
+}
+
+model Category {
+  id             String           @id @default(auto()) @map("_id") @db.ObjectId
+  title          String
+  weight_value   Int              @default(0)
+  RolePermission RolePermission[]
+  Product        Product[]
+  UserPermission UserPermission[]
+}
+
+model Color {
+  id           String         @id @default(auto()) @map("_id") @db.ObjectId
+  title        String
+  hax_code     String
+  ProductColor ProductColor[]
+}
+
+model Store {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  outlet  String
+  number  String
+  email   String
+  address String
+}
+
+model Role {
+  id             String           @id @default(auto()) @map("_id") @db.ObjectId
+  title          String           @unique
+  RolePermission RolePermission[]
+  User           User[]
+}
+
+model Permission {
+  id             String           @id @default(auto()) @map("_id") @db.ObjectId
+  title          String           @unique
+  code           Int              @default(0)
+  RolePermission RolePermission[]
+  UserPermission UserPermission[]
+}
+
+model RolePermission {
+  id           String      @id @default(auto()) @map("_id") @db.ObjectId
+  role         Role        @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  roleId       String      @db.ObjectId
+  permission   Permission? @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  permissionId String?     @db.ObjectId
+  category     Category?   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  categoryId   String?     @db.ObjectId
+}
+
+model Product {
+  id                      String           @id @default(auto()) @map("_id") @db.ObjectId
+  title                   String
+  slug                    String           @unique
+  deccription             String
+  price                   Float
+  model                   String
+  features                String
+  technical_specification Json
+  supports                Json
+  images                  Json
+  thumbnail               String
+  isActive                Boolean          @default(false)
+  weight_value            Int              @default(0)
+  category                Category         @relation(fields: [categoryId], references: [id])
+  categoryId              String           @db.ObjectId
+  ProductColor            ProductColor[]
+  FeatureProduct          FeatureProduct[]
+}
+
+model ProductColor {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  color     Color   @relation(fields: [colorId], references: [id], onDelete: Cascade)
+  colorId   String  @db.ObjectId
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String  @db.ObjectId
+}
+
+model FeatureProduct {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  sl        Int
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String  @db.ObjectId
+}
+
+model UserPermission {
+  id           String      @id @default(auto()) @map("_id") @db.ObjectId
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       String      @db.ObjectId
+  permission   Permission? @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  permissionId String?     @db.ObjectId
+  category     Category?   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  categoryId   String?     @db.ObjectId
+}
+
+model User {
+  id             String           @id @default(auto()) @map("_id") @db.ObjectId
+  username       String           @unique
+  password       String
+  name           String?
+  phone          String?
+  email          String?
+  avater         String?
+  isActive       Boolean          @default(false)
+  isSuperAdmin   Boolean          @default(false)
+  role           Role?            @relation(fields: [roleId], references: [id])
+  roleId         String?          @db.ObjectId
+  UserPermission UserPermission[]
+}

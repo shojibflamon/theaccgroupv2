@@ -16,5 +16,5 @@ const postUser = async (data) => {
   }
 };
 
-postUser({ username: "admin", password: "admin", isSuperAdmin: true });
+postUser({ username: "admin", password: "admin", isSuperAdmin: true , isActive: true});
 console.log("user created...");

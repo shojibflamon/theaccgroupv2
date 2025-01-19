@@ -9,7 +9,7 @@ export const POST = route.configure({
       const dir = params.get('dir');
       // let dir = request.body.dir; // 123
 
-      return `media/${dir}/${filename}`;
+      return `assets/${dir}/${filename}`;
     } catch (error) {
       console.log(error)
       return Response.error();
